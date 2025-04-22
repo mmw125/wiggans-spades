@@ -32,7 +32,7 @@ export function Spades() {
                 }));
             }} />
         case GAME_STATES.SCOREBOARD:
-            return <ScoreDisplay players={players} done={() => setGameState()} />
+            return <ScoreDisplay players={players} done={() => setGameState(GAME_STATES.GAME)} />
     }
 }
 
