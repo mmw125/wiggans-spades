@@ -19,20 +19,20 @@ interface Player {
 
 export function Spades() {
     const [gameState, setGameState] = React.useState(GAME_STATES.INPUT_NAMES);
-    const [names, setNames] = useState(["Mark", "Chloe", "Kate", "AJ"]);
+    const [names, setNames] = useState(["foo", "bar", "biz", "baz"]);
     const [players, setPlayers] = useState([] as Player[]);
-    
+
 
     switch (gameState) {
         case GAME_STATES.INPUT_NAMES:
             return <ImportNames names={names} setNames={setNames} done={() => {
                 setGameState(GAME_STATES.SCOREBOARD);
                 setPlayers(names.map(name => {
-                    return { name, rounds: [{bet: 7, scored: 5}] as Round[] };
+                    return { name, rounds: [{ bet: 7, scored: 5 }] as Round[] };
                 }));
             }} />
         case GAME_STATES.SCOREBOARD:
-            return <ScoreDisplay players={players} done={() => setGameState()}/>
+            return <ScoreDisplay players={players} done={() => setGameState()} />
     }
 }
 
