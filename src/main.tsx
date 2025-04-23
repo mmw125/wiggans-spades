@@ -2,11 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Analytics } from "@vercel/analytics/react"
 import './index.css'
-import { Spades } from './Spades.js'
+import { Spades } from './spades'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Spades />
+      <Spades />
     <Analytics />
   </StrictMode>,
 )
