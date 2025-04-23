@@ -1,5 +1,6 @@
 
 import React, { useState } from "react"
+import { Form, InputGroup, Row } from "react-bootstrap";
 
 enum GAME_STATES {
     INPUT_NAMES,
@@ -38,33 +39,34 @@ export function Spades() {
 
 function ImportNames({ done, names, setNames }: { done: () => void, names: string[], setNames: (names: string[]) => void }) {
     const maxPossibleTricks = Math.floor(52 / names.length);
-    return <table>
-        <tbody>
-            {names.map((_, i) => {
-                return (
-                    <tr key={i}>
-                        <td><NameInput defaultValue={names[i]} setName={(name) => { console.log(name) }} /></td>
-                    </tr>)
-            })}
-            <tr><td><button onClick={() => {
-                setNames([...names, ''])
-            }}>Add Player</button></td></tr>
-            <tr>
-                <td>
-                    Max Tricks {maxPossibleTricks}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <button onClick={done}>Go</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-}
-
-export function NameInput({ setName, defaultValue }: { defaultValue?: string, setName: (name: string) => void }) {
-    return <input required={true} aria-required={true} defaultValue={defaultValue} onChange={(e) => setName(e.target.value)} />
+    return <Form>
+        {names.map((_, i) => {
+            return (
+                <Row className="mb-3">
+                    <Form.Group key={`name-${i}`} className="mb-3">
+                        <Form.Label>Player {i + 1}</Form.Label>
+                        <Form.Control required aria-required defaultValue={names[i]} onChange={(e) => {
+                            const newNames = [...names];
+                            newNames[i] = e.currentTarget.nodeValue ?? "";
+                            setNames(newNames)
+                        }} />
+                    </Form.Group>
+                </Row>)
+        })}
+        <tr><td><button onClick={() => {
+            setNames([...names, ''])
+        }}>Add Player</button></td></tr>
+        <tr>
+            <td>
+                Max Tricks {maxPossibleTricks}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onClick={done}>Go</button>
+            </td>
+        </tr>
+    </Form>
 }
 
 function ScoreDisplay({ players, done }: { players: Player[], done: (increase: boolean) => void }) {
