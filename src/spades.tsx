@@ -1,6 +1,6 @@
 
 import React, { useState } from "react"
-import { Form, InputGroup, Row } from "react-bootstrap";
+import { Form, Row, Table } from "react-bootstrap";
 
 enum GAME_STATES {
     INPUT_NAMES,
@@ -70,29 +70,31 @@ function ImportNames({ done, names, setNames }: { done: () => void, names: strin
 }
 
 function ScoreDisplay({ players, done }: { players: Player[], done: (increase: boolean) => void }) {
-    return <table>
+    return <Table>
+        <thead>
+            <th />
+            {players.map(player => (<th>{player.name}</th>))}
+        </thead>
         <tbody>
-            {players.map(player => {
+            {players[0].rounds.map((_, i) => {
                 return (
                     <tr>
-                        <PlayerScoreDisplay player={player} />
+                        <PlayerScoreDisplay players={players} row={i} />
                     </tr>
                 )
             })}
             <tr><button onClick={() => done(false)}>-</button><button onClick={() => done(true)}>+</button></tr>
         </tbody>
-    </table>
+    </Table>
 }
 
-function PlayerScoreDisplay({ player }: { player: Player }) {
+function PlayerScoreDisplay({ row, players }: { players: Player[], row: number }) {
     return (
         <>
-            <td>{player.name}</td>
-            {player.rounds.map(round => {
-                return (<td>
-                    {round.scored}/{round.bet}
-                </td>)
-            })}
+            <td />
+            {players.map(player => (<td>
+                {player.rounds[row].scored}/{player.rounds[row].bet}
+            </td>))}
         </>);
 
 }
