@@ -1,6 +1,7 @@
 
 import React, { useState } from "react"
-import { Form, Row, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
+import { ImportNames } from "./NameInput";
 
 enum GAME_STATES {
     INPUT_NAMES,
@@ -29,57 +30,30 @@ export function Spades() {
             return <ImportNames names={names} setNames={setNames} done={() => {
                 setGameState(GAME_STATES.SCOREBOARD);
                 setPlayers(names.map(name => {
-                    return { name, rounds: [{ bet: 7, scored: 5 }] as Round[] };
+                    return { name, rounds: [{ bet: 7, scored: 5 }] };
                 }));
             }} />
         case GAME_STATES.SCOREBOARD:
-            return <ScoreDisplay players={players} done={() => setGameState(GAME_STATES.GAME)} />
+            return <Scoreboard players={players} done={() => setGameState(GAME_STATES.GAME)} />
+        case GAME_STATES.GAME:
+            return <Game players={players} done={() => setGameState(GAME_STATES.SCOREBOARD)} />
     }
 }
 
-function ImportNames({ done, names, setNames }: { done: () => void, names: string[], setNames: (names: string[]) => void }) {
-    const maxPossibleTricks = Math.floor(52 / names.length);
-    return <Form>
-        {names.map((_, i) => {
-            return (
-                <Row className="mb-3">
-                    <Form.Group key={`name-${i}`} className="mb-3">
-                        <Form.Label>Player {i + 1}</Form.Label>
-                        <Form.Control required aria-required defaultValue={names[i]} onChange={(e) => {
-                            const newNames = [...names];
-                            newNames[i] = e.currentTarget.nodeValue ?? "";
-                            setNames(newNames)
-                        }} />
-                    </Form.Group>
-                </Row>)
-        })}
-        <tr><td><button onClick={() => {
-            setNames([...names, ''])
-        }}>Add Player</button></td></tr>
-        <tr>
-            <td>
-                Max Tricks {maxPossibleTricks}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button onClick={done}>Go</button>
-            </td>
-        </tr>
-    </Form>
-}
 
-function ScoreDisplay({ players, done }: { players: Player[], done: (increase: boolean) => void }) {
-    return <Table>
+
+function Scoreboard({ players, done }: { players: Player[], done: (increase: boolean) => void }) {
+    const rounds = Math.max(players[0].rounds.length, 10)
+    return <Table striped>
         <thead>
             <th />
             {players.map(player => (<th>{player.name}</th>))}
         </thead>
         <tbody>
-            {players[0].rounds.map((_, i) => {
+            {[...Array(rounds)].map((_, i) => {
                 return (
                     <tr>
-                        <PlayerScoreDisplay players={players} row={i} />
+                        <ScoreboardRow players={players} row={i} />
                     </tr>
                 )
             })}
@@ -88,13 +62,19 @@ function ScoreDisplay({ players, done }: { players: Player[], done: (increase: b
     </Table>
 }
 
-function PlayerScoreDisplay({ row, players }: { players: Player[], row: number }) {
+function ScoreboardRow({ row, players }: { players: Player[], row: number }) {
     return (
         <>
             <td />
-            {players.map(player => (<td>
-                {player.rounds[row].scored}/{player.rounds[row].bet}
+            {players.map(player => (<td style={{ minWidth: "50px" }}>
+                {player.rounds[row] ? (<>{player.rounds[row].scored}/{player.rounds[row].bet}</>) : "\u00A0"}
             </td>))}
         </>);
 
+}
+
+interface GameProps { done: () => void, players: Player[] }
+
+function Game({ }: GameProps) {
+    return <></>
 }
