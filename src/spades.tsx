@@ -52,7 +52,7 @@ function Scoreboard({ players, done }: { players: Player[], done: (increase: boo
         <tbody>
             {[...Array(rounds)].map((_, i) => {
                 return (
-                    <tr>
+                    <tr key={`row ${i}`}>
                         <ScoreboardRow players={players} row={i} />
                     </tr>
                 )
@@ -66,7 +66,7 @@ function ScoreboardRow({ row, players }: { players: Player[], row: number }) {
     return (
         <>
             <td />
-            {players.map(player => (<td style={{ minWidth: "50px" }}>
+            {players.map((player, i) => (<td  key={i} style={{ minWidth: "50px" }}>
                 {player.rounds[row] ? (<>{player.rounds[row].scored}/{player.rounds[row].bet}</>) : "\u00A0"}
             </td>))}
         </>);
