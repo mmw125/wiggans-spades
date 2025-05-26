@@ -1,7 +1,7 @@
 import { Form, Row } from "react-bootstrap";
 
 
-interface ImportNamesProps { done: () => void, names: string[], setNames: (names: string[]) => void }
+interface ImportNamesProps { done: (tricks: number) => void, names: string[], setNames: (names: string[]) => void }
 
 export function ImportNames({ done, names, setNames }: ImportNamesProps) {
     const maxPossibleTricks = Math.floor(52 / names.length);
@@ -28,7 +28,7 @@ export function ImportNames({ done, names, setNames }: ImportNamesProps) {
         </Row>
         <Row>
             <td>
-                <button onClick={done}>Go</button>
+                <button onClick={() => done()}>Go</button>
             </td>
         </Row>
     </Form>

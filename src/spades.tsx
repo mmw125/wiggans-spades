@@ -12,6 +12,8 @@ enum GAME_STATES {
 interface Round {
     bet: number;
     scored: number;
+    subtotal?: number;
+    tricks: number;
 }
 
 interface Player {
@@ -23,31 +25,31 @@ export function Spades() {
     const [gameState, setGameState] = React.useState(GAME_STATES.INPUT_NAMES);
     const [names, setNames] = useState(["foo", "bar", "biz", "baz"]);
     const [players, setPlayers] = useState([] as Player[]);
-
+    const [lastTricks, setLastTricks] = useState(0);
 
     switch (gameState) {
         case GAME_STATES.INPUT_NAMES:
             return <ImportNames names={names} setNames={setNames} done={() => {
-                setGameState(GAME_STATES.SCOREBOARD);
-                setPlayers(names.map(name => {
-                    return { name, rounds: [{ bet: 7, scored: 5 }] };
+                setGameState(GAME_STATES.GAME);
+                setPlayers(names.filter(name => name.length > 0).map(name => {
+                    return { name, rounds: [{ bet: 7, scored: 5, subtotal: 5, tricks: 12 }] };
                 }));
             }} />
-        case GAME_STATES.SCOREBOARD:
-            return <Scoreboard players={players} done={() => setGameState(GAME_STATES.GAME)} />
         case GAME_STATES.GAME:
             return <Game players={players} done={() => setGameState(GAME_STATES.SCOREBOARD)} />
+        case GAME_STATES.SCOREBOARD:
+            return <Scoreboard players={players} lastTricks={lastTricks} done={() => setGameState(GAME_STATES.GAME)} />
     }
 }
 
-
-
-function Scoreboard({ players, done }: { players: Player[], done: (increase: boolean) => void }) {
-    const rounds = Math.max(players[0].rounds.length, 10)
-    return <Table striped>
+function Scoreboard({ players, done, lastTricks }: { players: Player[], done: (nextBid: number) => void, lastTricks: number }) {
+    const rounds = Math.max(players[0].rounds.length, 10);
+    return <><Table striped>
         <thead>
-            <th />
-            {players.map(player => (<th>{player.name}</th>))}
+            <tr>
+                <th />
+                {players.map(player => (<th>{player.name}</th>))}
+            </tr>
         </thead>
         <tbody>
             {[...Array(rounds)].map((_, i) => {
@@ -57,24 +59,42 @@ function Scoreboard({ players, done }: { players: Player[], done: (increase: boo
                     </tr>
                 )
             })}
-            <tr><button onClick={() => done(false)}>-</button><button onClick={() => done(true)}>+</button></tr>
         </tbody>
     </Table>
+        <button onClick={() => done(lastTricks - 1)}>-</button><button onClick={() => done(lastTricks + 1)}>+</button>
+    </>
 }
 
 function ScoreboardRow({ row, players }: { players: Player[], row: number }) {
+    const trickNumber = (players[0].rounds[row] ?? { tricks: "" }).tricks
     return (
         <>
-            <td />
-            {players.map((player, i) => (<td  key={i} style={{ minWidth: "50px" }}>
-                {player.rounds[row] ? (<>{player.rounds[row].scored}/{player.rounds[row].bet}</>) : "\u00A0"}
+            <td >{trickNumber}</td>
+            {players.map((player, i) => (<td key={i} style={{ minWidth: "50px" }}>
+                {player.rounds[row] ? (<>{player.rounds[row].scored}/{player.rounds[row].bet}<br />{player.rounds[row].subtotal}</>) : "\u00A0"}
             </td>))}
         </>);
-
 }
 
 interface GameProps { done: () => void, players: Player[] }
 
-function Game({ }: GameProps) {
-    return <></>
+function Game({ done, players }: GameProps) {
+    return <Table striped>
+        <thead>
+            <tr>
+                <td />
+                <td>Bet</td>
+            </tr>
+        </thead>
+        <tbody>
+            {players.map((player, i) => <GameRow player={player} key={i} />)}
+            <tr><button onClick={() => done()}>-</button><button onClick={() => done()}>+</button></tr>
+        </tbody>
+    </Table>
+}
+
+interface GameRowProps { player: Player }
+
+function GameRow({ player }: GameRowProps) {
+    return <tr><td>{player.name}</td></tr>;
 }
