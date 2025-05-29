@@ -25,11 +25,12 @@ export function Spades() {
     const [gameState, setGameState] = React.useState(GAME_STATES.INPUT_NAMES);
     const [names, setNames] = useState(["foo", "bar", "biz", "baz"]);
     const [players, setPlayers] = useState([] as Player[]);
-    const [lastTricks, setLastTricks] = useState(0);
+    const [currentTricks, setCurrentTricks] = useState(0);
 
     switch (gameState) {
         case GAME_STATES.INPUT_NAMES:
-            return <ImportNames names={names} setNames={setNames} done={() => {
+            return <ImportNames names={names} setNames={setNames} done={(tricks) => {
+                setCurrentTricks(tricks);
                 setGameState(GAME_STATES.GAME);
                 setPlayers(names.filter(name => name.length > 0).map(name => {
                     return { name, rounds: [{ bet: 7, scored: 5, subtotal: 5, tricks: 12 }] };
@@ -38,7 +39,10 @@ export function Spades() {
         case GAME_STATES.GAME:
             return <Game players={players} done={() => setGameState(GAME_STATES.SCOREBOARD)} />
         case GAME_STATES.SCOREBOARD:
-            return <Scoreboard players={players} lastTricks={lastTricks} done={() => setGameState(GAME_STATES.GAME)} />
+            return <Scoreboard players={players} lastTricks={currentTricks} done={(nextBid) => {
+                setCurrentTricks(nextBid);
+                setGameState(GAME_STATES.GAME);
+            }} />
     }
 }
 

@@ -28,7 +28,7 @@ export function ImportNames({ done, names, setNames }: ImportNamesProps) {
         </Row>
         <Row>
             <td>
-                <button onClick={() => done()}>Go</button>
+                <button onClick={() => done(maxPossibleTricks)}>Go</button>
             </td>
         </Row>
     </Form>
